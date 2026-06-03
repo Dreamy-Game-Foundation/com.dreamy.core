@@ -1,0 +1,19 @@
+{
+  "name": "com.dreamy.core",
+  "version": "1.0.0",
+  "displayName": "Dreamy Core",
+  "description": "Foundation package: ServiceLocator, EventBus, BindableProperty, TaskRunner, Singleton, AppLifecycle, Extensions.",
+  "unity": "6000.0",
+  "author": {
+    "name": "Dreamy Studio"
+  },
+  "dependencies": {
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask"
+  },
+  "keywords": [
+    "core",
+    "service-locator",
+    "event-bus",
+    "dreamy"
+  ]
+}
