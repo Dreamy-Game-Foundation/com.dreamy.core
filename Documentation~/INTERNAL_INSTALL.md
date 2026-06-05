@@ -7,14 +7,13 @@ Use Git URL imports for internal team projects. Do not use OpenUPM for this priv
 1. Push `Packages/com.dreamy.core` to its own private GitHub repository.
 2. Tag stable releases with SemVer, for example `v1.1.0`.
 3. Give every teammate read access to the repository.
-4. In each consuming Unity project, add UniTask first, then add `com.dreamy.core`.
+4. In each consuming Unity project, add `com.dreamy.core` by Git URL and tag.
 
 ## Manifest Template
 
 ```json
 {
   "dependencies": {
-    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
     "com.dreamy.core": "https://github.com/Dreamy-Game-Foundation/com.dreamy.core.git#v1.1.0"
   }
 }
@@ -22,9 +21,11 @@ Use Git URL imports for internal team projects. Do not use OpenUPM for this priv
 
 Replace the `com.dreamy.core` URL with the team's real private repository URL if different.
 
-## Why UniTask Is Listed In The Project Manifest
+## Optional Project Dependencies
 
-Unity Package Manager can install a package from a Git URL, but Git URL dependencies inside that package are not a reliable distribution boundary for team projects. Keeping third-party Git dependencies in the consuming project's `Packages/manifest.json` makes fresh project setup reproducible.
+`com.dreamy.core` itself has no third-party runtime package dependency.
+
+Install project-level dependencies such as UniTask, DOTween, Addressables, and LeanPool in the consuming project's `Packages/manifest.json` or through a private scoped registry. Unity Package Manager can install a package from a Git URL, but Git URL dependencies inside that package are not a reliable distribution boundary for team projects.
 
 ## Release Checklist
 

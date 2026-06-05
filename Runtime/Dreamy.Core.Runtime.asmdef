@@ -1,9 +1,7 @@
 {
     "name": "Dreamy.Core.Runtime",
     "rootNamespace": "Dreamy.Core",
-    "references": [
-        "UniTask"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
