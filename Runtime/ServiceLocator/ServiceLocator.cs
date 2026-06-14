@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Dreamy.Core
 {
@@ -12,6 +13,12 @@ namespace Dreamy.Core
         private static readonly Dictionary<Type, object> _services = new();
         private static readonly Dictionary<Type, List<Action<object>>> _pending = new();
 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            Clear();
+        }
+
         /// <summary>Registers a service. Resolves any pending deferred callbacks immediately.</summary>
         public static void Register<T>(T service) where T : class
         {
@@ -22,9 +29,19 @@ namespace Dreamy.Core
 
             if (_pending.TryGetValue(type, out var callbacks))
             {
-                foreach (var cb in callbacks)
-                    cb(service);
                 _pending.Remove(type);
+
+                foreach (Action<object> callback in callbacks)
+                {
+                    try
+                    {
+                        callback(service);
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogException(exception);
+                    }
+                }
             }
 
             DreamyLog.Log($"ServiceLocator: registered {type.Name}");

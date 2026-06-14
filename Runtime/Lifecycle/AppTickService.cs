@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -20,10 +21,30 @@ namespace Dreamy.Core
     {
         private static AppTickService _instance;
         private readonly List<ITickable> _tickables = new();
+        private readonly List<ITickable> _pendingAdd = new();
+        private readonly List<ITickable> _pendingRemove = new();
+        private bool _isTicking;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            _instance = null;
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
+            if (_instance != null)
+            {
+                return;
+            }
+
+            _instance = FindFirstObjectByType<AppTickService>();
+            if (_instance != null)
+            {
+                return;
+            }
+
             var go = new GameObject("[AppTickService]");
             _instance = go.AddComponent<AppTickService>();
             DontDestroyOnLoad(go);
@@ -31,22 +52,116 @@ namespace Dreamy.Core
 
         public static void Register(ITickable tickable)
         {
+            if (tickable == null)
+            {
+                throw new ArgumentNullException(nameof(tickable));
+            }
+
             if (_instance == null)
             {
                 DreamyLog.Error("AppTickService not initialized. Ensure RuntimeInitializeOnLoadMethod ran.");
                 return;
             }
-            if (!_instance._tickables.Contains(tickable))
-                _instance._tickables.Add(tickable);
+
+            _instance.RegisterInternal(tickable);
         }
 
-        public static void Unregister(ITickable tickable) => _instance?._tickables.Remove(tickable);
+        public static void Unregister(ITickable tickable)
+        {
+            if (tickable == null)
+            {
+                return;
+            }
+
+            _instance?.UnregisterInternal(tickable);
+        }
 
         private void Update()
         {
             float dt = Time.deltaTime;
-            for (int i = 0; i < _tickables.Count; i++)
-                _tickables[i].Tick(dt);
+            _isTicking = true;
+            try
+            {
+                for (int i = 0; i < _tickables.Count; i++)
+                {
+                    try
+                    {
+                        _tickables[i].Tick(dt);
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogException(exception);
+                    }
+                }
+            }
+            finally
+            {
+                _isTicking = false;
+                ApplyPendingChanges();
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _instance = null;
+            }
+        }
+
+        private void RegisterInternal(ITickable tickable)
+        {
+            if (_isTicking)
+            {
+                _pendingRemove.Remove(tickable);
+                if (!_tickables.Contains(tickable) && !_pendingAdd.Contains(tickable))
+                {
+                    _pendingAdd.Add(tickable);
+                }
+
+                return;
+            }
+
+            if (!_tickables.Contains(tickable))
+            {
+                _tickables.Add(tickable);
+            }
+        }
+
+        private void UnregisterInternal(ITickable tickable)
+        {
+            if (_isTicking)
+            {
+                _pendingAdd.Remove(tickable);
+                if (!_pendingRemove.Contains(tickable))
+                {
+                    _pendingRemove.Add(tickable);
+                }
+
+                return;
+            }
+
+            _tickables.Remove(tickable);
+        }
+
+        private void ApplyPendingChanges()
+        {
+            foreach (ITickable tickable in _pendingRemove)
+            {
+                _tickables.Remove(tickable);
+            }
+
+            _pendingRemove.Clear();
+
+            foreach (ITickable tickable in _pendingAdd)
+            {
+                if (!_tickables.Contains(tickable))
+                {
+                    _tickables.Add(tickable);
+                }
+            }
+
+            _pendingAdd.Clear();
         }
     }
 }

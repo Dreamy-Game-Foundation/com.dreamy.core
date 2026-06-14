@@ -25,12 +25,13 @@ namespace Dreamy.Core
         private static readonly HashSet<EventBinding<T>> _bindings = new();
         private static readonly List<EventBinding<T>> _pendingAdd = new();
         private static readonly List<EventBinding<T>> _pendingRemove = new();
-        private static bool _isRaising;
+        private static int _raiseDepth;
+        private static bool _clearPending;
 
         public static void Register(EventBinding<T> binding)
         {
             if (binding == null) return;
-            if (_isRaising)
+            if (_raiseDepth > 0)
                 _pendingAdd.Add(binding);
             else
                 _bindings.Add(binding);
@@ -39,7 +40,7 @@ namespace Dreamy.Core
         public static void Unregister(EventBinding<T> binding)
         {
             if (binding == null) return;
-            if (_isRaising)
+            if (_raiseDepth > 0)
                 _pendingRemove.Add(binding);
             else
                 _bindings.Remove(binding);
@@ -47,28 +48,71 @@ namespace Dreamy.Core
 
         public static void Raise(T @event)
         {
-            _isRaising = true;
-            foreach (var binding in _bindings)
+            _raiseDepth++;
+            try
             {
-                try
+                foreach (var binding in _bindings)
                 {
-                    binding.Invoke(@event);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogException(e);
+                    try
+                    {
+                        binding.Invoke(@event);
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.LogException(exception);
+                    }
                 }
             }
-            _isRaising = false;
-
-            foreach (var b in _pendingRemove) _bindings.Remove(b);
-            _pendingRemove.Clear();
-
-            foreach (var b in _pendingAdd) _bindings.Add(b);
-            _pendingAdd.Clear();
+            finally
+            {
+                _raiseDepth--;
+                if (_raiseDepth == 0)
+                {
+                    ApplyPendingChanges();
+                }
+            }
         }
 
         /// <summary>Removes all bindings. Use in test teardown or scene resets.</summary>
-        public static void Clear() => _bindings.Clear();
+        public static void Clear()
+        {
+            _pendingAdd.Clear();
+            _pendingRemove.Clear();
+
+            if (_raiseDepth > 0)
+            {
+                _clearPending = true;
+                return;
+            }
+
+            _bindings.Clear();
+            _clearPending = false;
+        }
+
+        private static void ApplyPendingChanges()
+        {
+            if (_clearPending)
+            {
+                _bindings.Clear();
+                _pendingAdd.Clear();
+                _pendingRemove.Clear();
+                _clearPending = false;
+                return;
+            }
+
+            foreach (EventBinding<T> binding in _pendingRemove)
+            {
+                _bindings.Remove(binding);
+            }
+
+            _pendingRemove.Clear();
+
+            foreach (EventBinding<T> binding in _pendingAdd)
+            {
+                _bindings.Add(binding);
+            }
+
+            _pendingAdd.Clear();
+        }
     }
 }

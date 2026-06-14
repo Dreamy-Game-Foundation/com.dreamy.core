@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Dreamy.Core
 {
@@ -17,6 +18,14 @@ namespace Dreamy.Core
 
         /// <summary>Fires just before the application quits.</summary>
         public static event Action OnQuit;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics()
+        {
+            OnPause = null;
+            OnFocus = null;
+            OnQuit = null;
+        }
 
         internal static void RaisePause(bool paused) => OnPause?.Invoke(paused);
         internal static void RaiseFocus(bool hasFocus) => OnFocus?.Invoke(hasFocus);

@@ -9,6 +9,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - `BindableProperty<T>`, `IUnRegister`, and automatic unregister helpers
 
+## [1.1.2] - 2026-06-15
+
+### Fixed
+
+- Made nested event raises defer binding mutations until the outermost raise completes
+- Reset static service state for play mode sessions without domain reload
+- Made deferred service callbacks and AppTick listeners isolate exceptions
+- Deferred AppTick registration changes while the tick list is being iterated
+
 ## [1.1.1] - 2026-06-07
 
 ### Fixed
