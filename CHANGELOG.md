@@ -3,6 +3,12 @@
 All notable changes to this package will be documented in this file.
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Removed
+
+- `BindableProperty<T>`, `IUnRegister`, and automatic unregister helpers
+
 ## [1.1.1] - 2026-06-07
 
 ### Fixed

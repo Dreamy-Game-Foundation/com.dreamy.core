@@ -6,7 +6,6 @@
 
 - `ServiceLocator`
 - `MyEventBus<T>` and `IEvent`
-- `BindableProperty<T>`
 - `StateMachine`
 - Singleton base classes
 - `AppLifecycle`
@@ -53,20 +52,6 @@ private void OnEnable()
 private void OnDisable()
 {
     MyEventBus<GameStartEvent>.Unregister(binding);
-}
-```
-
-## BindableProperty
-
-Use `BindableProperty<T>` for simple reactive state.
-
-```csharp
-private readonly BindableProperty<int> score = new(0);
-
-private void Awake()
-{
-    score.RegisterWithInitValue(value => scoreText.text = value.ToString())
-        .UnRegisterOnDestroy(gameObject);
 }
 ```
 

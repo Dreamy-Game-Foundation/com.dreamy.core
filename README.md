@@ -30,7 +30,6 @@ For local development inside this project, keep the embedded package under `Pack
 |---|---|---|
 | `ServiceLocator` | `Dreamy.Core` | Type-safe service registry with deferred callbacks |
 | `MyEventBus<T>` | `Dreamy.Core` | Struct event bus |
-| `BindableProperty<T>` | `Dreamy.Core` | Reactive property with auto-cleanup |
 | `StateMachine` | `Dreamy.Core` | MonoBehaviour finite state machine |
 | `MonoSingleton<T>` | `Dreamy.Core` | Scene-local singleton |
 | `LiveSingleton<T>` | `Dreamy.Core` | Auto-created DontDestroyOnLoad singleton |

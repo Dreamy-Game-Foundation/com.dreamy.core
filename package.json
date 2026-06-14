@@ -2,7 +2,7 @@
   "name": "com.dreamy.core",
   "version": "1.1.1",
   "displayName": "Dreamy Core",
-  "description": "Foundation primitives: ServiceLocator, EventBus, BindableProperty, StateMachine, Singleton, AppLifecycle, Logger, and generic extensions.",
+  "description": "Foundation primitives: ServiceLocator, EventBus, StateMachine, Singleton, AppLifecycle, Logger, and generic extensions.",
   "unity": "6000.0",
   "type": "library",
   "license": "UNLICENSED",

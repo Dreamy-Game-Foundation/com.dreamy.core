@@ -4,12 +4,11 @@ using UnityEngine;
 namespace Dreamy.Core.Samples
 {
     /// <summary>
-    /// Demo for ServiceLocator, EventBus, and BindableProperty.
+    /// Demo for ServiceLocator and EventBus.
     /// </summary>
     public class DemoController : MonoBehaviour
     {
-        private readonly BindableProperty<int> score = new(0);
-        private readonly BindableProperty<float> health = new(100f);
+        private int score;
 
         private EventBinding<DemoScoreEvent> scoreBinding;
 
@@ -19,11 +18,6 @@ namespace Dreamy.Core.Samples
 
             scoreBinding = new EventBinding<DemoScoreEvent>(OnScoreChanged);
             MyEventBus<DemoScoreEvent>.Register(scoreBinding);
-
-            score.RegisterWithInitValue(value => DreamyLog.Log($"Score: {value}"))
-                .UnRegisterOnDestroy(gameObject);
-            health.RegisterWithInitValue(value => DreamyLog.Log($"Health: {value:F0}"))
-                .UnRegisterOnDestroy(gameObject);
         }
 
         private void OnDestroy()
@@ -36,18 +30,14 @@ namespace Dreamy.Core.Samples
         {
             if (Input.GetKeyDown(KeyCode.E))
             {
-                score.Value += 100;
-                MyEventBus<DemoScoreEvent>.Raise(new DemoScoreEvent { Score = score.Value });
+                score += 100;
+                MyEventBus<DemoScoreEvent>.Raise(
+                    new DemoScoreEvent { Score = score });
             }
 
             if (Input.GetKeyDown(KeyCode.D))
             {
                 ServiceLocator.Get<IDemoService>().DoSomething();
-            }
-
-            if (Input.GetKeyDown(KeyCode.H))
-            {
-                health.Value = Mathf.Max(0, health.Value - 10f);
             }
         }
 
