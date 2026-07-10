@@ -16,7 +16,7 @@ namespace Dreamy.Core
             {
                 if (_instance != null) return _instance;
 
-                _instance = FindFirstObjectByType<T>();
+                _instance = FindAnyObjectByType<T>();
                 if (_instance != null) return _instance;
 
                 var go = new GameObject($"[{typeof(T).Name}]");

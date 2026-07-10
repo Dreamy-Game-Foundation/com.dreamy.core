@@ -25,7 +25,7 @@ namespace Dreamy.Core
                 return;
             }
 
-            instance = FindFirstObjectByType<AppLifecycleMonitor>();
+            instance = FindAnyObjectByType<AppLifecycleMonitor>();
             if (instance != null)
             {
                 return;

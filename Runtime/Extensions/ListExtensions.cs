@@ -7,7 +7,6 @@ namespace Dreamy.Core
 {
     public static class ListExtensions
     {
-        /// <summary>Executes <paramref name="action"/> for each element in the sequence.</summary>
         public static void ForEach<T>(this IEnumerable<T> sequence, Action<T> action)
         {
             foreach (var item in sequence)
@@ -48,6 +47,68 @@ namespace Dreamy.Core
         {
             if (list.Count > 0)
                 list.RemoveAt(list.Count - 1);
+        }
+
+        public static bool TryGetAt<T>(this IReadOnlyList<T> list, int index, out T value)
+        {
+            if (list != null && index >= 0 && index < list.Count)
+            {
+                value = list[index];
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        public static T GetLastOrDefault<T>(this IReadOnlyList<T> list, T defaultValue = default)
+            => list == null || list.Count == 0 ? defaultValue : list[list.Count - 1];
+
+        public static void Swap<T>(this IList<T> list, int firstIndex, int secondIndex)
+        {
+            if (list == null || firstIndex == secondIndex)
+            {
+                return;
+            }
+
+            var temp = list[firstIndex];
+            list[firstIndex] = list[secondIndex];
+            list[secondIndex] = temp;
+        }
+
+        public static int RemoveAll<T>(this IList<T> list, Predicate<T> match)
+        {
+            if (list == null || match == null)
+            {
+                return 0;
+            }
+
+            var removedCount = 0;
+            for (var i = list.Count - 1; i >= 0; i--)
+            {
+                if (!match(list[i]))
+                {
+                    continue;
+                }
+
+                list.RemoveAt(i);
+                removedCount++;
+            }
+
+            return removedCount;
+        }
+
+        public static void AddRangeUnique<T>(this IList<T> list, IEnumerable<T> items)
+        {
+            if (list == null || items == null)
+            {
+                return;
+            }
+
+            foreach (var item in items)
+            {
+                list.AddIfNotContains(item);
+            }
         }
     }
 }

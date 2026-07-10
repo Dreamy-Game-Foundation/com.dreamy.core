@@ -22,7 +22,7 @@ namespace Dreamy.Core
             {
                 if (_instance == null)
                 {
-                    _instance = FindFirstObjectByType<T>();
+                    _instance = FindAnyObjectByType<T>();
                     if (_instance == null)
                     {
                         var go = new GameObject(typeof(T).Name + " [Auto]") { hideFlags = HideFlags.HideAndDontSave };
@@ -43,7 +43,7 @@ namespace Dreamy.Core
             DontDestroyOnLoad(gameObject);
 
             // Destroy all older instances; keep this (newest) one.
-            var existing = FindObjectsByType<T>(FindObjectsSortMode.None);
+            var existing = FindObjectsByType<T>(FindObjectsInactive.Exclude);
             foreach (var old in existing)
             {
                 if (old == this) continue;

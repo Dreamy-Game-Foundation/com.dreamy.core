@@ -39,7 +39,7 @@ namespace Dreamy.Core
                 return;
             }
 
-            _instance = FindFirstObjectByType<AppTickService>();
+            _instance = FindAnyObjectByType<AppTickService>();
             if (_instance != null)
             {
                 return;
