@@ -9,6 +9,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - `BindableProperty<T>`, `IUnRegister`, and automatic unregister helpers
 
+## [1.2.0] - 2026-10-12
+
+### Added
+
+- Backend-neutral `Dreamy.Core.Pooling.IPoolService`, migrated from Template with its metadata GUID preserved.
+- `PoolSpawnOptions` and extension APIs for world/local pose, target pose, UI anchored position, component spawn, configuration callbacks and capacity-aware `TrySpawn`.
+- Make Core Demo importable in Package Manager and add an injected pooling example with explicit host teardown.
+- Pooling requires an explicitly installed backend; Core still has no LeanPool or Editor dependencies.
+
 ## [1.1.2] - 2026-06-15
 
 ### Fixed
